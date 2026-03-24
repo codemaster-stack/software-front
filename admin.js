@@ -7,7 +7,7 @@
  * ============================================================
  */
 
-const API_BASE_URL = "http://localhost:5000/api"; // ← Change to deployed URL
+const API_BASE_URL = "https://angeluni.onrender.com/api";
 
 /* ─── STATE ──────────────────────────────────────────────── */
 let authToken      = localStorage.getItem("angeluni_token") || null;
