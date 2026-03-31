@@ -17,8 +17,8 @@
  */
 
 /* ─── CONFIG ─────────────────────────────────────────────── */
-const API_BASE_URL = "https://angeluni.onrender.com/api";
-const WHATSAPP_NUMBER = "2348063437093";             // ← Change to real number
+const API_BASE_URL    = "http://localhost:5000/api"; // ← Change to deployed URL
+const WHATSAPP_NUMBER = "2349000000000";             // ← Change to real number
 const DEFAULT_WA_MSG  =
   "Hello Angeluni-salltd 👋 I'm interested in your software development services. Could we discuss my project?";
 
@@ -100,7 +100,12 @@ function renderProjects(data) {
       ? `href="${escHtml(project.demoUrl)}" target="_blank" rel="noopener noreferrer"`
       : `href="#" aria-disabled="true"`;
 
+    const imgHTML = project.imageUrl
+      ? `<div class="project-img-wrap"><img src="${escHtml(project.imageUrl)}" alt="${escHtml(project.title)}" loading="lazy" /></div>`
+      : `<div class="project-img-wrap"><div class="project-img-placeholder">${project.icon || "🌐"}</div></div>`;
+
     card.innerHTML = `
+      ${imgHTML}
       <div class="project-header">
         <div class="project-icon" aria-hidden="true">${project.icon || "🌐"}</div>
         <span class="project-category">${formatCategory(project.category)}</span>

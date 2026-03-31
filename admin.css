@@ -665,3 +665,145 @@
   .modal-header,
   .modal-footer    { padding: 16px 18px; }
 }
+
+/* ─── LOGO IN LOGIN + SIDEBAR ───────────────────────────── */
+.login-logo-img {
+  width: 100px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 16px;
+}
+.sidebar-logo-img {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ─── TABLE THUMBNAIL ───────────────────────────────────── */
+.table-thumb {
+  width: 52px; height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: block;
+}
+.table-thumb-placeholder {
+  width: 52px; height: 36px;
+  background: var(--teal-glow);
+  border: 1px solid rgba(0,229,189,0.2);
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
+
+/* ─── IMAGE UPLOAD ───────────────────────────────────────── */
+.upload-area { position: relative; }
+.file-input {
+  position: absolute;
+  width: 100%; height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px;
+  border: 2px dashed var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  cursor: pointer;
+  transition: border-color var(--trans);
+  text-align: center;
+}
+.upload-label:hover { border-color: var(--teal); }
+.upload-icon { font-size: 1.8rem; }
+.upload-label span { font-size: 0.9rem; color: var(--text-2); }
+.upload-label small { font-size: 0.75rem; color: var(--text-3); }
+.upload-status { font-size: 0.82rem; margin-top: 6px; font-weight: 600; }
+.image-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  margin-top: 10px;
+}
+
+/* ─── CHART BOX ──────────────────────────────────────────── */
+.chart-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 24px 28px;
+  margin-bottom: 32px;
+}
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.chart-header h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.chart-sub {
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+.chart-wrap {
+  height: 220px;
+  position: relative;
+}
+
+/* ─── EMAIL COMPOSER ─────────────────────────────────────── */
+.email-composer {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 32px;
+  max-width: 760px;
+}
+.email-preview-note {
+  background: var(--teal-glow2);
+  border: 1px solid rgba(0,229,189,0.2);
+  border-radius: var(--r-sm);
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: var(--text-2);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.email-preview-note strong { color: var(--teal); }
+
+.email-social-preview {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+}
+.preview-label { font-size: 0.78rem; color: var(--text-3); }
+.preview-socials { display: flex; gap: 8px; flex-wrap: wrap; }
+.prev-btn {
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+.prev-btn.wa  { background: #25d366; }
+.prev-btn.yt  { background: #ff0000; }
+.prev-btn.fb  { background: #1877f2; }
+.prev-btn.ig  { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }

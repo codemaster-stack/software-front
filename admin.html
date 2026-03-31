@@ -7,24 +7,23 @@
   <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="admin.css" />
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body class="admin-body">
 
-  <!-- ── LOGIN SCREEN ──────────────────────────────────── -->
+  <!-- LOGIN SCREEN -->
   <div class="login-screen" id="loginScreen">
     <div class="login-card">
       <div class="login-logo">
-        <span class="logo-mark">A</span>
-        <span class="logo-text">ngeluni<em>-salltd</em></span>
+        <img src="logo.png" alt="Angeluni-salltd Logo" class="login-logo-img" />
       </div>
       <h1>Admin Login</h1>
       <p class="login-sub">Enter your credentials to access the dashboard.</p>
-
       <div id="loginError" class="alert alert-error" style="display:none"></div>
-
       <div class="form-group">
         <label for="loginUser">Username</label>
         <input type="text" id="loginUser" placeholder="admin" autocomplete="username" />
@@ -36,148 +35,152 @@
           <button type="button" class="pass-toggle" id="passToggle" aria-label="Toggle password">👁</button>
         </div>
       </div>
-
-      <button class="btn btn-primary btn-full" id="loginBtn">
-        Sign In to Dashboard
-      </button>
+      <button class="btn btn-primary btn-full" id="loginBtn">Sign In to Dashboard</button>
       <p class="login-back"><a href="index.html">← Back to website</a></p>
     </div>
   </div>
 
-  <!-- ── ADMIN DASHBOARD ───────────────────────────────── -->
+  <!-- ADMIN DASHBOARD -->
   <div class="admin-layout" id="adminDashboard" style="display:none">
 
     <!-- Sidebar -->
     <aside class="admin-sidebar" id="adminSidebar">
       <div class="sidebar-header">
-        <a href="index.html" class="nav-logo" target="_blank">
-          <span class="logo-mark">A</span>
-          <span class="logo-text">ngeluni<em>-salltd</em></span>
-        </a>
+        <img src="logo.png" alt="Angeluni-salltd" class="sidebar-logo-img" />
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">✕</button>
       </div>
-
       <nav class="sidebar-nav">
-        <button class="sidebar-link active" data-tab="overview">
-          <span class="nav-icon">📊</span> Overview
-        </button>
-        <button class="sidebar-link" data-tab="projects">
-          <span class="nav-icon">🗂️</span> Projects
-        </button>
-        <button class="sidebar-link" data-tab="videos">
-          <span class="nav-icon">🎬</span> Videos
-        </button>
+        <button class="sidebar-link active" data-tab="overview"><span class="nav-icon">📊</span> Overview</button>
+        <button class="sidebar-link" data-tab="projects"><span class="nav-icon">🗂️</span> Projects</button>
+        <button class="sidebar-link" data-tab="videos"><span class="nav-icon">🎬</span> Videos</button>
+        <button class="sidebar-link" data-tab="email"><span class="nav-icon">📧</span> Send Email</button>
       </nav>
-
       <div class="sidebar-footer">
-        <button class="btn-logout" id="logoutBtn">
-          <span>⬅</span> Logout
-        </button>
+        <button class="btn-logout" id="logoutBtn"><span>⬅</span> Logout</button>
       </div>
     </aside>
 
-    <!-- Main content -->
+    <!-- Main -->
     <main class="admin-main">
-      <!-- Top bar -->
       <header class="admin-topbar">
         <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
         <div class="topbar-title" id="topbarTitle">Overview</div>
-        <div class="topbar-user">
-          <span class="user-badge">Admin</span>
-        </div>
+        <div class="topbar-user"><span class="user-badge">Admin</span></div>
       </header>
 
-      <!-- Toast notification -->
       <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
-      <!-- ── TAB: OVERVIEW ─────────────────────────────── -->
+      <!-- TAB: OVERVIEW -->
       <section class="tab-pane active" id="tab-overview">
         <div class="page-header">
-          <h2>Dashboard Overview</h2>
-          <p>Welcome back. Here's a summary of your site content.</p>
+          <div><h2>Dashboard Overview</h2><p>Welcome back. Here's a summary of your site content.</p></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-big" id="statProjects">—</span><span class="stat-lbl">Total Projects</span></div></div>
+          <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><span class="stat-big" id="statVisible">—</span><span class="stat-lbl">Visible Projects</span></div></div>
+          <div class="stat-card"><div class="stat-icon">🎬</div><div class="stat-info"><span class="stat-big" id="statVideos">—</span><span class="stat-lbl">Total Videos</span></div></div>
+          <div class="stat-card"><div class="stat-icon">🔗</div><div class="stat-info"><span class="stat-big" id="statWithLinks">—</span><span class="stat-lbl">With Live Links</span></div></div>
         </div>
 
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-icon">🗂️</div>
-            <div class="stat-info">
-              <span class="stat-big" id="statProjects">—</span>
-              <span class="stat-lbl">Total Projects</span>
-            </div>
+        <!-- Chart box -->
+        <div class="chart-box">
+          <div class="chart-header">
+            <h3>Projects Added Per Month</h3>
+            <span class="chart-sub">Last 6 months</span>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon">✅</div>
-            <div class="stat-info">
-              <span class="stat-big" id="statVisible">—</span>
-              <span class="stat-lbl">Visible Projects</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🎬</div>
-            <div class="stat-info">
-              <span class="stat-big" id="statVideos">—</span>
-              <span class="stat-lbl">Total Videos</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🔗</div>
-            <div class="stat-info">
-              <span class="stat-big" id="statWithLinks">—</span>
-              <span class="stat-lbl">Projects with Live Links</span>
-            </div>
+          <div class="chart-wrap">
+            <canvas id="projectsChart"></canvas>
           </div>
         </div>
 
         <div class="quick-actions">
           <h3>Quick Actions</h3>
           <div class="qa-row">
-            <button class="qa-btn" onclick="switchTab('projects'); openProjectModal()">
-              ➕ Add New Project
-            </button>
-            <button class="qa-btn" onclick="switchTab('videos'); openVideoModal()">
-              ➕ Add New Video
-            </button>
-            <a href="index.html" target="_blank" class="qa-btn">
-              🌐 View Live Site
-            </a>
+            <button class="qa-btn" onclick="switchTab('projects'); openProjectModal()">➕ Add New Project</button>
+            <button class="qa-btn" onclick="switchTab('videos'); openVideoModal()">➕ Add New Video</button>
+            <button class="qa-btn" onclick="switchTab('email')">📧 Send Email</button>
+            <a href="index.html" target="_blank" class="qa-btn">🌐 View Live Site</a>
           </div>
         </div>
       </section>
 
-      <!-- ── TAB: PROJECTS ─────────────────────────────── -->
+      <!-- TAB: PROJECTS -->
       <section class="tab-pane" id="tab-projects">
         <div class="page-header">
-          <div>
-            <h2>Projects</h2>
-            <p>Manage your portfolio projects.</p>
-          </div>
+          <div><h2>Projects</h2><p>Manage your portfolio projects.</p></div>
           <button class="btn btn-primary" onclick="openProjectModal()">➕ Add Project</button>
         </div>
-
-        <div id="projectsTable">
-          <div class="loading-state">Loading projects…</div>
-        </div>
+        <div id="projectsTable"><div class="loading-state">Loading projects…</div></div>
       </section>
 
-      <!-- ── TAB: VIDEOS ───────────────────────────────── -->
+      <!-- TAB: VIDEOS -->
       <section class="tab-pane" id="tab-videos">
         <div class="page-header">
-          <div>
-            <h2>Videos</h2>
-            <p>Manage your video showcase.</p>
-          </div>
+          <div><h2>Videos</h2><p>Manage your video showcase.</p></div>
           <button class="btn btn-primary" onclick="openVideoModal()">➕ Add Video</button>
         </div>
+        <div id="videosTable"><div class="loading-state">Loading videos…</div></div>
+      </section>
 
-        <div id="videosTable">
-          <div class="loading-state">Loading videos…</div>
+      <!-- TAB: EMAIL -->
+      <section class="tab-pane" id="tab-email">
+        <div class="page-header">
+          <div><h2>Send Email</h2><p>Send a branded professional email to any client or contact.</p></div>
+          <button class="btn btn-ghost" id="testEmailBtn">Send Test Email to Gmail</button>
+        </div>
+
+        <div class="email-composer">
+          <div class="email-preview-note">
+            📨 Emails are sent with your <strong>Angeluni-salltd letterhead</strong>, logo, social media buttons, and signature.
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="emailTo">Recipient Email *</label>
+              <input type="email" id="emailTo" placeholder="client@example.com" />
+            </div>
+            <div class="form-group">
+              <label for="emailName">Recipient Name</label>
+              <input type="text" id="emailName" placeholder="e.g. John Adeyemi" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="emailSubject">Subject *</label>
+              <input type="text" id="emailSubject" placeholder="e.g. Project Update from Angeluni-salltd" />
+            </div>
+            <div class="form-group">
+              <label for="emailSender">Your Name / Sign-off</label>
+              <input type="text" id="emailSender" placeholder="e.g. The Angeluni-salltd Team" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="emailMessage">Message *</label>
+            <textarea id="emailMessage" rows="8" placeholder="Write your message here…&#10;&#10;The email will be wrapped in a professional branded template with your logo, social media links, and contact details automatically included."></textarea>
+          </div>
+
+          <div class="email-social-preview">
+            <span class="preview-label">Social buttons included in email:</span>
+            <div class="preview-socials">
+              <span class="prev-btn wa">💬 WhatsApp</span>
+              <span class="prev-btn yt">▶ YouTube</span>
+              <span class="prev-btn fb">f Facebook</span>
+              <span class="prev-btn ig">📸 Instagram</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="sendEmailBtn" style="margin-top:8px">
+            📧 Send Branded Email
+          </button>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- ── PROJECT MODAL ─────────────────────────────────── -->
+  <!-- PROJECT MODAL -->
   <div class="modal-overlay" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
     <div class="modal">
       <div class="modal-header">
@@ -186,7 +189,6 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="projectId" />
-
         <div class="form-row">
           <div class="form-group">
             <label for="pTitle">Title *</label>
@@ -202,11 +204,25 @@
             </select>
           </div>
         </div>
-
         <div class="form-group">
           <label for="pDesc">Description *</label>
           <textarea id="pDesc" rows="3" placeholder="Describe the project…" maxlength="600"></textarea>
           <small class="char-count"><span id="pDescCount">0</span>/600</small>
+        </div>
+
+        <!-- Image upload -->
+        <div class="form-group">
+          <label for="pImageFile">Project Image</label>
+          <div class="upload-area">
+            <input type="file" id="pImageFile" accept="image/*" class="file-input" />
+            <label for="pImageFile" class="upload-label">
+              <span class="upload-icon">🖼️</span>
+              <span>Click to upload image</span>
+              <small>JPG, PNG, WebP — max 5MB</small>
+            </label>
+          </div>
+          <div id="uploadStatus" class="upload-status"></div>
+          <img id="imagePreview" src="" alt="Preview" class="image-preview" style="display:none" />
         </div>
 
         <div class="form-row">
@@ -219,17 +235,14 @@
             <input type="number" id="pOrder" placeholder="0" min="0" />
           </div>
         </div>
-
         <div class="form-group">
           <label for="pTags">Tags (comma-separated)</label>
           <input type="text" id="pTags" placeholder="HTML, CSS, JavaScript, React" />
         </div>
-
         <div class="form-group">
           <label for="pDemo">Demo / Live URL</label>
           <input type="url" id="pDemo" placeholder="https://yourproject.com" />
         </div>
-
         <div class="form-group toggle-group">
           <label>Visible on site?</label>
           <label class="toggle-switch">
@@ -245,7 +258,7 @@
     </div>
   </div>
 
-  <!-- ── VIDEO MODAL ────────────────────────────────────── -->
+  <!-- VIDEO MODAL -->
   <div class="modal-overlay" id="videoModal" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
     <div class="modal">
       <div class="modal-header">
@@ -254,32 +267,26 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="videoId" />
-
         <div class="form-group">
           <label for="vTitle">Title *</label>
           <input type="text" id="vTitle" placeholder="e.g. Project Walkthrough" maxlength="120" />
         </div>
-
         <div class="form-group">
           <label for="vDesc">Description *</label>
           <textarea id="vDesc" rows="3" placeholder="Describe what this video shows…" maxlength="400"></textarea>
           <small class="char-count"><span id="vDescCount">0</span>/400</small>
         </div>
-
         <div class="form-group">
-          <label for="vEmbed">YouTube Embed URL</label>
-          <input type="url" id="vEmbed" placeholder="https://www.youtube.com/embed/VIDEO_ID" />
-          <small class="field-hint">
-            To get this: YouTube → Share → Embed → copy the <code>src</code> value.
-            Leave blank to show "coming soon" placeholder.
+          <label for="vEmbed">YouTube or Vimeo URL</label>
+          <input type="url" id="vEmbed" placeholder="https://youtu.be/VIDEO_ID or youtube.com/watch?v=..." />
+          <small class="field-hint" id="vEmbedHint">
+            Paste any YouTube or Vimeo link — it will be auto-converted to embed format.
           </small>
         </div>
-
         <div class="form-group">
           <label for="vOrder">Display Order</label>
           <input type="number" id="vOrder" placeholder="0" min="0" />
         </div>
-
         <div class="form-group toggle-group">
           <label>Visible on site?</label>
           <label class="toggle-switch">
@@ -295,7 +302,7 @@
     </div>
   </div>
 
-  <!-- ── DELETE CONFIRM MODAL ───────────────────────────── -->
+  <!-- DELETE MODAL -->
   <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true">
     <div class="modal modal-sm">
       <div class="modal-header">
@@ -303,7 +310,7 @@
         <button class="modal-close" onclick="closeModal('deleteModal')" aria-label="Close">✕</button>
       </div>
       <div class="modal-body">
-        <p id="deleteMessage">Are you sure you want to delete this item? This cannot be undone.</p>
+        <p id="deleteMessage">Are you sure you want to delete this item?</p>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeModal('deleteModal')">Cancel</button>
