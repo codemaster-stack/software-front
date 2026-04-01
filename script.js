@@ -17,7 +17,7 @@
  */
 
 /* ─── CONFIG ─────────────────────────────────────────────── */
-const API_BASE_URL    = "https://angeluni.onrender.com/api"; // ← Change to deployed URL
+const API_BASE_URL    = "https://angeluni.onrender.com"; // ← Change to deployed URL
 const WHATSAPP_NUMBER = "2348063437093";             // ← Change to real number
 const DEFAULT_WA_MSG  =
   "Hello Angeluni-salltd 👋 I'm interested in your software development services. Could we discuss my project?";
@@ -53,7 +53,8 @@ async function loadProjects(category = "all") {
   const grid = document.getElementById("projectsGrid");
   if (!grid) return;
 
-  // Show skeleton loaders
+  // Always clear first then show skeletons — prevents duplication
+  grid.innerHTML = "";
   grid.innerHTML = skeletonCards(3);
 
   const endpoint = category === "all"

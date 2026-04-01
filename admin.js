@@ -172,18 +172,30 @@ async function loadProjectsTable() {
 
 /* ─── PROJECT MODAL ──────────────────────────────────────── */
 function openProjectModal(id = null) {
-  uploadedImageUrl = ""; uploadedImagePublicId = "";
-  ["projectId","pTitle","pDesc","pTags","pDemo"].forEach(i => { const el = document.getElementById(i); if(el) el.value = ""; });
-  document.getElementById("pDescCount").textContent = "0";
-  document.getElementById("pCategory").value  = "";
-  document.getElementById("pIcon").value      = "🌐";
-  document.getElementById("pOrder").value     = "0";
-  document.getElementById("pVisible").checked = true;
-  document.getElementById("pImageFile").value = "";
+  // Reset image state
+  uploadedImageUrl = "";
+  uploadedImagePublicId = "";
+
+  // Reset form fields — DO NOT include projectId here
+  ["pTitle","pDesc","pTags","pDemo"].forEach(i => {
+    const el = document.getElementById(i);
+    if (el) el.value = "";
+  });
+  document.getElementById("pDescCount").textContent  = "0";
+  document.getElementById("pCategory").value         = "";
+  document.getElementById("pIcon").value             = "🌐";
+  document.getElementById("pOrder").value            = "0";
+  document.getElementById("pVisible").checked        = true;
+  document.getElementById("pImageFile").value        = "";
   document.getElementById("imagePreview").style.display = "none";
-  document.getElementById("imagePreview").src = "";
+  document.getElementById("imagePreview").src        = "";
   document.getElementById("uploadStatus").textContent = "";
+
+  // Set the hidden ID field AFTER reset — critical for PUT vs POST
+  document.getElementById("projectId").value = id || "";
+
   document.getElementById("projectModalTitle").textContent = id ? "Edit Project" : "Add Project";
+
   if (id) {
     const p = allProjects.find(p => p._id === id);
     if (p) {
@@ -192,11 +204,19 @@ function openProjectModal(id = null) {
       document.getElementById("pDescCount").textContent = p.description.length;
       document.getElementById("pCategory").value  = p.category;
       document.getElementById("pIcon").value      = p.icon || "🌐";
-      document.getElementById("pTags").value      = (p.tags||[]).join(", ");
+      document.getElementById("pTags").value      = (p.tags || []).join(", ");
       document.getElementById("pDemo").value      = p.demoUrl !== "#" ? p.demoUrl : "";
       document.getElementById("pOrder").value     = p.order || 0;
       document.getElementById("pVisible").checked = p.isVisible;
-      if (p.imageUrl) { uploadedImageUrl = p.imageUrl; uploadedImagePublicId = p.imagePublicId||""; const pr = document.getElementById("imagePreview"); pr.src = p.imageUrl; pr.style.display = "block"; }
+
+      // Load existing image into preview
+      if (p.imageUrl) {
+        uploadedImageUrl      = p.imageUrl;
+        uploadedImagePublicId = p.imagePublicId || "";
+        const pr = document.getElementById("imagePreview");
+        pr.src           = p.imageUrl;
+        pr.style.display = "block";
+      }
     }
   }
   openModal("projectModal");
@@ -218,19 +238,71 @@ async function handleImageUpload(e) {
 }
 
 async function saveProject() {
-  const id = document.getElementById("projectId").value;
+  const id       = document.getElementById("projectId").value.trim();
   const title    = document.getElementById("pTitle").value.trim();
   const desc     = document.getElementById("pDesc").value.trim();
   const category = document.getElementById("pCategory").value;
+
   if (!title)    return showToast("Title is required.", "error");
   if (!desc)     return showToast("Description is required.", "error");
   if (!category) return showToast("Please select a category.", "error");
-  const payload = { title, description: desc, category, icon: document.getElementById("pIcon").value.trim()||"🌐", tags: document.getElementById("pTags").value.split(",").map(t=>t.trim()).filter(Boolean), demoUrl: document.getElementById("pDemo").value.trim()||"#", order: parseInt(document.getElementById("pOrder").value)||0, isVisible: document.getElementById("pVisible").checked, imageUrl: uploadedImageUrl, imagePublicId: uploadedImagePublicId };
-  const btn = document.getElementById("saveProjectBtn"); btn.textContent = "Saving…"; btn.disabled = true;
-  const result = await authFetch(id?`/projects/${id}`:"/projects", { method: id?"PUT":"POST", body: JSON.stringify(payload) });
-  btn.textContent = "Save Project"; btn.disabled = false;
-  if (result?.success) { closeModal("projectModal"); showToast(id?"Project updated!":"Project added!", "success"); await loadProjectsTable(); await loadOverviewStats(); }
-  else showToast(result?.message||"Failed to save project.", "error");
+
+  // If editing and no new image was uploaded, keep existing image from the project
+  let finalImageUrl      = uploadedImageUrl;
+  let finalImagePublicId = uploadedImagePublicId;
+
+  if (id && !uploadedImageUrl) {
+    // Find existing project data to preserve its image
+    const existing = allProjects.find(p => p._id === id);
+    if (existing) {
+      finalImageUrl      = existing.imageUrl      || "";
+      finalImagePublicId = existing.imagePublicId || "";
+    }
+  }
+
+  const payload = {
+    title,
+    description: desc,
+    category,
+    icon:          document.getElementById("pIcon").value.trim() || "🌐",
+    tags:          document.getElementById("pTags").value.split(",").map(t => t.trim()).filter(Boolean),
+    demoUrl:       document.getElementById("pDemo").value.trim() || "#",
+    order:         parseInt(document.getElementById("pOrder").value) || 0,
+    isVisible:     document.getElementById("pVisible").checked,
+    imageUrl:      finalImageUrl,
+    imagePublicId: finalImagePublicId,
+  };
+
+  const btn = document.getElementById("saveProjectBtn");
+  btn.textContent = "Saving…";
+  btn.disabled    = true;
+
+  // Use PUT for edit, POST for new — id must be a valid MongoDB ObjectId
+  const endpoint = id ? `/projects/${id}` : "/projects";
+  const method   = id ? "PUT" : "POST";
+
+  console.log("Saving project:", method, endpoint, payload); // Debug log
+
+  const result = await authFetch(endpoint, {
+    method,
+    body: JSON.stringify(payload),
+  });
+
+  btn.textContent = "Save Project";
+  btn.disabled    = false;
+
+  if (result?.success) {
+    closeModal("projectModal");
+    showToast(id ? "Project updated!" : "Project added!", "success");
+    // Reset uploaded image state
+    uploadedImageUrl      = "";
+    uploadedImagePublicId = "";
+    await loadProjectsTable();
+    await loadOverviewStats();
+  } else {
+    console.error("Save failed:", result);
+    showToast(result?.message || "Failed to save project.", "error");
+  }
 }
 
 async function toggleProject(id) {
