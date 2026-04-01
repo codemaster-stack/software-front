@@ -24,18 +24,20 @@
       <h1>Admin Login</h1>
       <p class="login-sub">Enter your credentials to access the dashboard.</p>
       <div id="loginError" class="alert alert-error" style="display:none"></div>
-      <div class="form-group">
-        <label for="loginUser">Username</label>
-        <input type="text" id="loginUser" placeholder="admin" autocomplete="username" />
-      </div>
-      <div class="form-group">
-        <label for="loginPass">Password</label>
-        <div class="pass-wrap">
-          <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
-          <button type="button" class="pass-toggle" id="passToggle" aria-label="Toggle password">👁</button>
+      <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
+        <div class="form-group">
+          <label for="loginUser">Username</label>
+          <input type="text" id="loginUser" placeholder="admin" autocomplete="username" />
         </div>
-      </div>
-      <button class="btn btn-primary btn-full" id="loginBtn">Sign In to Dashboard</button>
+        <div class="form-group">
+          <label for="loginPass">Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="pass-toggle" id="passToggle" aria-label="Toggle password">👁</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="loginBtn">Sign In to Dashboard</button>
+      </form>
       <p class="login-back"><a href="index.html">← Back to website</a></p>
     </div>
   </div>
@@ -169,6 +171,20 @@
               <span class="prev-btn fb">f Facebook</span>
               <span class="prev-btn ig">📸 Instagram</span>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label for="emailAttachment">Attach File (optional)</label>
+            <div class="upload-area">
+              <input type="file" id="emailAttachment" class="file-input"
+                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
+              <label for="emailAttachment" class="upload-label">
+                <span class="upload-icon">📎</span>
+                <span>Click to attach a file</span>
+                <small>Images, PDF, Word, Excel — max 10MB</small>
+              </label>
+            </div>
+            <div id="attachmentName" style="font-size:0.82rem;color:var(--teal);margin-top:6px;"></div>
           </div>
 
           <button class="btn btn-primary" id="sendEmailBtn" style="margin-top:8px">

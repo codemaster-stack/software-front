@@ -17,7 +17,7 @@
  */
 
 /* ─── CONFIG ─────────────────────────────────────────────── */
-const API_BASE_URL = "https://angeluni.onrender.com/api"; // ← Change to deployed URL
+const API_BASE_URL    = "https://angeluni.onrender.com/api"; // ← Change to deployed URL
 const WHATSAPP_NUMBER = "2348063437093";             // ← Change to real number
 const DEFAULT_WA_MSG  =
   "Hello Angeluni-salltd 👋 I'm interested in your software development services. Could we discuss my project?";
@@ -75,6 +75,7 @@ function renderProjects(data) {
   const grid = document.getElementById("projectsGrid");
   if (!grid) return;
 
+  // Always clear grid first to prevent duplication
   grid.innerHTML = "";
 
   if (!data || data.length === 0) {
@@ -82,12 +83,8 @@ function renderProjects(data) {
     return;
   }
 
-  data.forEach((project, i) => {
-    const card = document.createElement("article");
-    card.className = "project-card";
-    card.style.animationDelay = `${i * 0.07}s`;
-    card.setAttribute("aria-label", `Project: ${project.title}`);
-
+  // Build all cards as HTML string — no appendChild needed
+  const html = data.map((project, i) => {
     const tagsHTML = (project.tags || [])
       .map(tag => `<span class="tag">${escHtml(tag)}</span>`)
       .join("");
@@ -100,24 +97,26 @@ function renderProjects(data) {
       ? `href="${escHtml(project.demoUrl)}" target="_blank" rel="noopener noreferrer"`
       : `href="#" aria-disabled="true"`;
 
-    const imgHTML = project.imageUrl
+    // Only show image if imageUrl exists and is not empty
+    const imgHTML = (project.imageUrl && project.imageUrl.trim() !== "")
       ? `<div class="project-img-wrap"><img src="${escHtml(project.imageUrl)}" alt="${escHtml(project.title)}" loading="lazy" /></div>`
-      : `<div class="project-img-wrap"><div class="project-img-placeholder">${project.icon || "🌐"}</div></div>`;
+      : "";
 
-    card.innerHTML = `
-      ${imgHTML}
-      <div class="project-header">
-        <div class="project-icon" aria-hidden="true">${project.icon || "🌐"}</div>
-        <span class="project-category">${formatCategory(project.category)}</span>
-      </div>
-      <h3 class="project-title">${escHtml(project.title)}</h3>
-      <p class="project-desc">${escHtml(project.description)}</p>
-      <div class="project-tags" aria-label="Technologies used">${tagsHTML}</div>
-      <a ${demoAttrs} class="btn btn-ghost">${demoLabel}</a>
-    `;
+    return `
+      <article class="project-card" style="animation-delay:${i * 0.07}s" aria-label="Project: ${escHtml(project.title)}">
+        ${imgHTML}
+        <div class="project-header">
+          <div class="project-icon" aria-hidden="true">${project.icon || "🌐"}</div>
+          <span class="project-category">${formatCategory(project.category)}</span>
+        </div>
+        <h3 class="project-title">${escHtml(project.title)}</h3>
+        <p class="project-desc">${escHtml(project.description)}</p>
+        <div class="project-tags" aria-label="Technologies used">${tagsHTML}</div>
+        <a ${demoAttrs} class="btn btn-ghost">${demoLabel}</a>
+      </article>`;
+  }).join("");
 
-    grid.appendChild(card);
-  });
+  grid.innerHTML = html;
 }
 
 /* ─── PROJECT FILTER ─────────────────────────────────────── */

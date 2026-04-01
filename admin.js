@@ -244,14 +244,34 @@ function autoConvertVideoUrl() {
   const input = document.getElementById("vEmbed");
   const hint  = document.getElementById("vEmbedHint");
   if (!input) return;
-  let url = input.value.trim(); if (!url) return;
-  if (url.includes("youtube.com/embed/")||url.includes("player.vimeo.com")) return;
+
+  // Strip any accidental leading/trailing whitespace or emoji
+  let url = input.value.trim();
+  // Remove any non-URL characters before https
+  url = url.replace(/^[^h]*(https)/i, 'https');
+  input.value = url;
+
+  if (!url) return;
+  if (url.includes("youtube.com/embed/") || url.includes("player.vimeo.com")) {
+    if (hint) { hint.textContent = "✅ Valid embed URL"; hint.style.color = "var(--teal)"; }
+    return;
+  }
+
   const ytShort = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
   const ytWatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
-  const ytId    = (ytShort&&ytShort[1])||(ytWatch&&ytWatch[1]);
-  if (ytId) { input.value = `https://www.youtube.com/embed/${ytId}`; if(hint){hint.textContent="✅ URL auto-converted!";hint.style.color="var(--teal)";} return; }
+  const ytId    = (ytShort && ytShort[1]) || (ytWatch && ytWatch[1]);
+
+  if (ytId) {
+    input.value = "https://www.youtube.com/embed/" + ytId;
+    if (hint) { hint.textContent = "✅ Converted to embed URL!"; hint.style.color = "var(--teal)"; }
+    return;
+  }
+
   const vimeo = url.match(/vimeo\.com\/(\d+)/);
-  if (vimeo) { input.value = `https://player.vimeo.com/video/${vimeo[1]}`; if(hint){hint.textContent="✅ URL auto-converted!";hint.style.color="var(--teal)";} }
+  if (vimeo) {
+    input.value = "https://player.vimeo.com/video/" + vimeo[1];
+    if (hint) { hint.textContent = "✅ Converted to embed URL!"; hint.style.color = "var(--teal)"; }
+  }
 }
 
 /* ─── VIDEOS TABLE ───────────────────────────────────────── */
@@ -314,15 +334,55 @@ async function handleSendEmail() {
   const subject        = document.getElementById("emailSubject").value.trim();
   const message        = document.getElementById("emailMessage").value.trim();
   const senderName     = document.getElementById("emailSender").value.trim();
+  const attachInput    = document.getElementById("emailAttachment");
   const btn            = document.getElementById("sendEmailBtn");
-  if (!recipientEmail) return showToast("Recipient email is required.","error");
-  if (!subject)        return showToast("Subject is required.","error");
-  if (!message)        return showToast("Message is required.","error");
-  btn.textContent="Sending…"; btn.disabled=true;
-  const result = await authFetch("/email/send",{method:"POST",body:JSON.stringify({recipientEmail,recipientName,subject,message,senderName})});
-  btn.textContent="Send Email"; btn.disabled=false;
-  if (result?.success) { showToast("✅ Email sent successfully!","success"); ["emailTo","emailName","emailSubject","emailMessage"].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=""; }); }
-  else showToast(result?.message||"Failed to send email.","error");
+
+  if (!recipientEmail) return showToast("Recipient email is required.", "error");
+  if (!subject)        return showToast("Subject is required.", "error");
+  if (!message)        return showToast("Message is required.", "error");
+
+  btn.textContent = "Sending…";
+  btn.disabled    = true;
+
+  // Use FormData to support file attachment
+  const formData = new FormData();
+  formData.append("recipientEmail", recipientEmail);
+  formData.append("recipientName",  recipientName);
+  formData.append("subject",        subject);
+  formData.append("message",        message);
+  formData.append("senderName",     senderName);
+
+  // Attach file if selected
+  if (attachInput && attachInput.files[0]) {
+    formData.append("attachment", attachInput.files[0]);
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/email/send`, {
+      method:  "POST",
+      headers: { Authorization: `Bearer ${authToken}` },
+      body:    formData, // No Content-Type header — browser sets it with boundary
+    });
+    const result = await res.json();
+
+    if (result?.success) {
+      showToast("✅ Email sent successfully!", "success");
+      ["emailTo","emailName","emailSubject","emailMessage"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      if (attachInput) { attachInput.value = ""; }
+      const nameEl = document.getElementById("attachmentName");
+      if (nameEl) nameEl.textContent = "";
+    } else {
+      showToast(result?.message || "Failed to send email.", "error");
+    }
+  } catch {
+    showToast("Failed to send email. Check connection.", "error");
+  } finally {
+    btn.textContent = "Send Email";
+    btn.disabled    = false;
+  }
 }
 
 async function handleTestEmail() {
